@@ -123,6 +123,8 @@ public class Registration implements ActionListener {
             System.out.println("FullName: " + fullName);
             System.out.println("UserName: "+userName);
             System.out.println("Password: "+ password);
+            DataBaseConnection con = new MySQLConnection();
+            con.addUser(fullName, userName, password);
         }
         else if(e.getSource() == cancel) {
             nameField.setText("");
@@ -132,8 +134,8 @@ public class Registration implements ActionListener {
         }
     }
 
-    // Entry point
-    public static void main(String[] args) {
-        new Registration().start();
-    }
+//    // Entry point
+//    public static void main(String[] args) {
+//        new Registration().start();
+//    }
 }
