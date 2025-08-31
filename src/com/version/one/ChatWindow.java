@@ -2,6 +2,8 @@ package com.version.one;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -11,7 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class ChatWindow extends JFrame {
+public class ChatWindow extends JFrame implements ActionListener{
 	private JTextArea chatArea;
 	private JTextArea textBox;
 	private JButton sendButton;
@@ -34,6 +36,7 @@ public class ChatWindow extends JFrame {
 		textBox.setWrapStyleWord(true);
 		sendButton = new JButton("Send");
 		sendButton.setPreferredSize(new Dimension(80, 40));
+		sendButton.addActionListener(this);
 		JPanel panel1 = new JPanel();
 		JScrollPane paneForMessage = new JScrollPane(textBox, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -48,7 +51,20 @@ public class ChatWindow extends JFrame {
 		 
 		this.setVisible(true);
 	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() == sendButton) {
+			if(!textBox.getText().trim().isEmpty()) {
+				chatArea.append("Message: "+textBox.getText()+"\n");
+				textBox.setText("");
+			}
+		}
+		
+	}
+	
 	public static void main(String[] args) {
 		ChatWindow chatWindow = new ChatWindow();
 	}
+	
 }
