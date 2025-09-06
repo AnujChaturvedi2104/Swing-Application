@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -48,6 +49,8 @@ public class ChatWindow extends JFrame implements ActionListener{
 		setLayout(new BorderLayout());
 		add(scrollPanel, BorderLayout.CENTER);
 		add(panel1, BorderLayout.SOUTH);
+		
+		chatArea.append("Welcome to the Chat room!\n");
 		 
 		this.setVisible(true);
 	}

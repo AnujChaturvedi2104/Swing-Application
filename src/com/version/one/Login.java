@@ -29,6 +29,7 @@ public class Login implements ActionListener{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	 
 		frame.setLocationRelativeTo(null);
+		loginForm();
 	}
 
 	 void loginForm() {
@@ -102,10 +103,10 @@ public class Login implements ActionListener{
 		return panel;
 	}
 
-	public static void main(String[] args) {
-		Login login = new Login();
-		login.loginForm();
-	}
+//	public static void main(String[] args) {
+//		Login login = new Login();
+//		login.loginForm();
+//	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -116,6 +117,9 @@ public class Login implements ActionListener{
 			DataBaseConnection con = new MySQLConnection();
 			if(con.checkCredentials(userDetails, pass)) {
 				System.out.println("User Exist");
+				frame.dispose();
+				new ChatWindow();
+				
 			}
 			
 		} else if(e.getSource() == cancel) {
