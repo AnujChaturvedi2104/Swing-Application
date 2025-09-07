@@ -18,26 +18,40 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
-public class ChatWindow extends JFrame implements ActionListener{
+public class ChatWindow extends JFrame implements ActionListener {
 	private JTextArea chatArea;
 	private JTextArea textBox;
 	private JButton sendButton;
-	private Socket socket;
+
+	private static int countForServer = 0;
+	private String messageOutgoing;
+	Socket socket;
+	PrintWriter out;
+	BufferedReader in;
+
+	static {
+		if (countForServer < 1) {
+			new ChatServer(); // starts the server only once.
+			countForServer++;
+		}
+	}
+
 	public ChatWindow() {
+
 		setTitle("Chat Window");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(new Dimension(400, 500));
 		setLocationRelativeTo(null); // pops up on the center of the screen
-		
-		chatArea = new JTextArea(1,25);
+
+		chatArea = new JTextArea(1, 25);
 		chatArea.setEditable(false);
 		chatArea.setLineWrap(true);
 		chatArea.setWrapStyleWord(true); // so word goes next line when no space and not character
-		
+
 		JScrollPane scrollPanel = new JScrollPane(chatArea);
-		
+
 		textBox = new JTextArea(1, 25);
 		textBox.setLineWrap(true);
 		textBox.setWrapStyleWord(true);
@@ -50,41 +64,53 @@ public class ChatWindow extends JFrame implements ActionListener{
 		panel1.setLayout(new BorderLayout());
 		panel1.add(paneForMessage, BorderLayout.CENTER);
 		panel1.add(sendButton, BorderLayout.EAST); // check position
-	 
-		
+
 		setLayout(new BorderLayout());
 		add(scrollPanel, BorderLayout.CENTER);
 		add(panel1, BorderLayout.SOUTH);
-		
+
 		chatArea.append("Welcome to the Chat room!\n");
-		 
-		this.setVisible(true);
 		try {
-			socket = new Socket ("localhost", 4000);
+			socket = new Socket("localhost", 4000);
+			out = new PrintWriter(socket.getOutputStream(), true);
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+			new Thread(() -> { // reading messages
+				try {
+					String input;
+					while ((input = in.readLine()) != null) {
+						String message = input;
+						SwingUtilities.invokeLater(() -> chatArea.append(message + "\n"));
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			}).start();
+
 		} catch (UnknownHostException e) {
-		 
 			e.printStackTrace();
 		} catch (IOException e) {
-		 
 			e.printStackTrace();
 		}
+		this.setVisible(true);
+
 	}
-	
-	 
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == sendButton) {
-			if(!textBox.getText().trim().isEmpty()) {
-				chatArea.append("Message: "+textBox.getText()+"\n");
+		if (e.getSource() == sendButton) {
+			String message = textBox.getText().trim();
+			if (!message.isEmpty()) {
+				out.println(message);
 				textBox.setText("");
 			}
 		}
-		
+
 	}
-	
+
 	public static void main(String[] args) {
 		ChatWindow chatWindow = new ChatWindow();
 	}
-	
+
 }
