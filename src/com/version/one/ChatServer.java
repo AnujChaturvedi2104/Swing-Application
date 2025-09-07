@@ -9,43 +9,44 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-
- 
 public class ChatServer {
 	private static final int PORT = 4000;
 	private static CopyOnWriteArrayList<ClientHandler> clients = new CopyOnWriteArrayList<>();
 
-	public static void main(String[] args) {
+	public static void entryPoint() {
 		try (ServerSocket server_socket = new ServerSocket(PORT)) {
 			System.out.println("Server is connected and running!");
-			
-			new Thread(()-> // writing server messages to everyone
+
+			new Thread(() -> // writing server messages to everyone
 			{
 				try (Scanner scan = new Scanner(System.in)) {
+
 					System.out.print("Enter message as SYS admin: ");
-					String message = scan.nextLine();
-					broadcast("[Server]: "+message, null);
+					while (true) {
+						String message = scan.nextLine();
+						broadcast("[Server]: " + message, null);
+					}
 				}
 			}).start();
-			
-			while(true) {
+
+			while (true) {
 				Socket sock = server_socket.accept();
 				ClientHandler client = new ClientHandler(sock);
 				clients.add(client);
 				new Thread(client).start();
 			}
- 		}catch(IOException exception) {
+		} catch (IOException exception) {
 			exception.printStackTrace();
-		} 
+		}
 	}
-	
-	
+
 	static void broadcast(String message, ClientHandler client) {
-		for(ClientHandler c : clients) {
-			if(c == client) continue;
+		for (ClientHandler c : clients) {
+
 			c.sendMessage(message);
 		}
 	}
+
 	static class ClientHandler implements Runnable {
 		private Socket clientSocket;
 		private PrintWriter out;
@@ -55,7 +56,7 @@ public class ChatServer {
 		public ClientHandler(Socket socket) {
 			try {
 				clientSocket = socket;
-				out = new PrintWriter(socket.getOutputStream());
+				out = new PrintWriter(socket.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			} catch (IOException exception) {
 				exception.printStackTrace();
@@ -75,12 +76,10 @@ public class ChatServer {
 					System.out.println("[" + username + "]" + ": " + input); // server logs
 					broadcast("[" + username + "]: " + input, this);
 				}
-				clients.remove(this);
-				System.out.println("Client: " + username + " just disconnected!");
+
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
-			finally {
+			} finally {
 				try {
 					in.close();
 					out.close();
@@ -88,9 +87,12 @@ public class ChatServer {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			
+				clients.remove(this);
+				System.out.println("Client: " + username + " just disconnected!");
+
 			}
 		}
+
 		void sendMessage(String message) {
 			out.println(message);
 		}
