@@ -42,7 +42,7 @@ This project is a **multi-user chat application** built in **Java** using **Swin
 
 ## Tech Stack
 
-- **Programming Language:** Java (SE 17+)
+- **Programming Language:** Java (SE 21)
 - **GUI Framework:** Swing
 - **Networking:** TCP Sockets (`Socket` / `ServerSocket`)
 - **Concurrency:** Java Threads, Multi-threaded client handling, `CopyOnWriteArrayList`
