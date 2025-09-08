@@ -118,7 +118,7 @@ public class Login implements ActionListener{
 			if(con.checkCredentials(userDetails, pass)) {
 				System.out.println("User Exist");
 				frame.dispose();
-				new ChatWindow();
+				new ChatWindow(userDetails, pass);
 				
 			}
 			

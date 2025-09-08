@@ -12,8 +12,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ChatServer {
 	private static final int PORT = 4000;
 	private static CopyOnWriteArrayList<ClientHandler> clients = new CopyOnWriteArrayList<>();
-
-	public static void entryPoint() {
+ 
+	 
+	public void entryPoint() {
 		try (ServerSocket server_socket = new ServerSocket(PORT)) {
 			System.out.println("Server is connected and running!");
 
@@ -54,6 +55,7 @@ public class ChatServer {
 		private String username;
 
 		public ClientHandler(Socket socket) {
+	 
 			try {
 				clientSocket = socket;
 				out = new PrintWriter(socket.getOutputStream(), true);
@@ -65,7 +67,7 @@ public class ChatServer {
 
 		@Override
 		public void run() {
-			out.print("Enter your username : ");
+		 
 			try {
 				username = in.readLine();
 				System.out.println(username + " just connected chat room!");

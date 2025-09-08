@@ -24,22 +24,27 @@ public class ChatWindow extends JFrame implements ActionListener {
 	private JTextArea chatArea;
 	private JTextArea textBox;
 	private JButton sendButton;
-
+	private ChatServer server;
 	private static int countForServer = 0;
 	private String messageOutgoing;
 	Socket socket;
 	PrintWriter out;
 	BufferedReader in;
-
-	static {
+	private String username;
+	private String password;
+	
+	public ChatWindow(String username, String password) {
+		this.username = username;
+		this.password = password;
+		
 		if (countForServer < 1) {
-			new ChatServer(); // starts the server only once.
+			new Thread(() -> {
+				server = new ChatServer();
+				server.entryPoint();
+				
+			}).start();
 			countForServer++;
 		}
-	}
-
-	public ChatWindow() {
-
 		setTitle("Chat Window");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(new Dimension(400, 500));
@@ -74,7 +79,7 @@ public class ChatWindow extends JFrame implements ActionListener {
 			socket = new Socket("localhost", 4000);
 			out = new PrintWriter(socket.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+			out.println(username);
 			new Thread(() -> { // reading messages
 				try {
 					String input;
@@ -110,7 +115,7 @@ public class ChatWindow extends JFrame implements ActionListener {
 	}
 
 	public static void main(String[] args) {
-		ChatWindow chatWindow = new ChatWindow();
+//		ChatWindow chatWindow = new ChatWindow();
 	}
 
 }
